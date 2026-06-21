@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vota Malta - Serate Estate 2026</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Montserrat', sans-serif;
+  background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+  color: #fff;
+  min-height: 100vh;
+}
+
+.hero {
+  background: linear-gradient(135deg, #ff0080, #ff8c00, #40e0d0);
+  padding: 40px 20px 60px;
+  text-align: center;
+  clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
+}
+.hero h1 { font-size: 3em; font-weight: 900; text-shadow: 3px 3px 6px rgba(0,0,0,.4); }
+.hero p { font-size: 1.2em; margin-top: 10px; opacity: .9; }
+
+.container { max-width: 900px; margin: 0 auto; padding: 20px; }
+
+.user-bar {
+  background: rgba(255,255,255,.1);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 20px;
+  margin: -30px auto 30px;
+  display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+  justify-content: center;
+}
+.user-bar input {
+  padding: 12px 20px; border-radius: 30px; border: 2px solid #ff8c00;
+  background: rgba(0,0,0,.4); color: #fff; font-size: 1em; outline: none;
+}
+.user-bar input::placeholder { color: #aaa; }
+.user-bar button {
+  padding: 12px 28px; border-radius: 30px; border: none;
+  background: linear-gradient(135deg, #ff0080, #ff8c00);
+  color: #fff; font-weight: 700; font-size: 1em; cursor: pointer;
+  transition: transform .2s;
+}
+.user-bar button:hover { transform: scale(1.05); }
+
+.leaderboard {
+  background: rgba(255,255,255,.08);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 30px;
+}
+.leaderboard h2 { text-align: center; margin-bottom: 16px; color: #ff8c00; }
+.leaderboard ol { list-style: none; }
+.leaderboard li {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 16px; margin: 6px 0;
+  background: rgba(255,255,255,.06); border-radius: 10px;
+  transition: background .3s;
+}
+.leaderboard li.top1 { background: linear-gradient(135deg, rgba(255,215,0,.3), rgba(255,140,0,.3)); }
+.leaderboard li.top2 { background: linear-gradient(135deg, rgba(192,192,192,.2), rgba(128,128,128,.2)); }
+.leaderboard li.top3 { background: linear-gradient(135deg, rgba(205,127,50,.2), rgba(139,69,19,.2)); }
+.leaderboard .pos { font-weight: 900; font-size: 1.3em; width: 40px; }
+.leaderboard .name { flex: 1; }
+.leaderboard .votes { font-weight: 700; color: #ff8c00; }
+.leaderboard .medal { font-size: 1.5em; }
+
+.controls {
+  display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; align-items: center;
+}
+.controls select, .controls input {
+  padding: 10px 16px; border-radius: 20px; border: 2px solid #ff8c00;
+  background: rgba(0,0,0,.4); color: #fff; font-size: .9em; outline: none;
+}
+
+.event-card {
+  background: rgba(255,255,255,.06);
+  backdrop-filter: blur(10px);
+  border-radius: 20px; padding: 24px; margin-bottom: 20px;
+  border: 1px solid rgba(255,255,255,.1);
+  transition: transform .2s, box-shadow .2s;
+}
+.event-card:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(255,0,128,.2); }
+.event-card h3 { font-size: 1.6em; margin-bottom: 4px; }
+.event-card .date-badge {
+  display: inline-block; background: #ff0080; padding: 4px 14px;
+  border-radius: 20px; font-size: .85em; font-weight: 700; margin-bottom: 10px;
+}
+.event-card .genre {
+  display: inline-block; background: #ff8c00; padding: 3px 12px;
+  border-radius: 20px; font-size: .8em; margin-left: 8px;
+}
+.event-details { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
+.detail { background: rgba(255,255,255,.06); padding: 10px 14px; border-radius: 10px; }
+.detail strong { color: #40e0d0; display: block; font-size: .8em; margin-bottom: 3px; }
+.detail span { font-size: .95em; }
+.desc { margin: 12px 0; line-height: 1.6; opacity: .85; font-size: .95em; }
+.map-container { border-radius: 12px; overflow: hidden; margin: 12px 0; height: 200px; }
+.map-container iframe { width: 100%; height: 100%; border: none; }
+
+.vote-section {
+  display: flex; align-items: center; gap: 12px; margin-top: 16px;
+  flex-wrap: wrap;
+}
+.vote-btn {
+  padding: 12px 30px; border-radius: 30px; border: none;
+  background: linear-gradient(135deg, #ff0080, #ff8c00);
+  color: #fff; font-weight: 700; font-size: 1.1em; cursor: pointer;
+  transition: transform .2s, opacity .2s;
+}
+.vote-btn:hover:not(:disabled) { transform: scale(1.05); }
+.vote-btn:disabled { opacity: .4; cursor: not-allowed; }
+.vote-btn.voted { background: #22c55e; }
+.vote-count {
+  font-size: 1.3em; font-weight: 800; color: #ff8c00;
+}
+.ticket-link {
+  display: inline-block; padding: 8px 18px; border-radius: 20px;
+  background: #40e0d0; color: #000; font-weight: 700; text-decoration: none;
+  font-size: .9em; margin-top: 8px;
+}
+
+footer { text-align: center; padding: 30px; opacity: .5; font-size: .85em; }
+
+@keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+.pulse { animation: pulse 1s infinite; }
+
+@media (max-width: 600px) {
+  .hero h1 { font-size: 2em; }
+  .event-details { grid-template-columns: 1fr; }
+  .user-bar { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>🎉 Vota Malta 🇲🇹</h1>
+  <p>Estate 2026 — Scegli la tua serata e vota!</p>
+</div>
+
+<div class="container">
+  <div class="user-bar" id="userBar">
+    <input type="text" id="userName" placeholder="Il tuo nome..." maxlength="20">
+    <button onclick="setUser()">Entra & Vota</button>
+    <span id="userMsg" style="color:#40e0d0;font-weight:600;"></span>
+  </div>
+
+  <div class="leaderboard" id="leaderboard">
+    <h2>🏆 Classifica Serate</h2>
+    <ol id="ranking"></ol>
+  </div>
+
+  <div class="controls">
+    <select id="dayFilter" onchange="renderEvents()">
+      <option value="">Tutti i giorni</option>
+    </select>
+    <select id="locationFilter" onchange="renderEvents()">
+      <option value="">Tutte le location</option>
+    </select>
+  </div>
+
+  <div id="eventsContainer"></div>
+</div>
+
+<footer>Fatto con ❤️ per la crew di Malta — Estate 2026</footer>
+
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js';
+import { getDatabase, ref, onValue, update, get } from 'https://www.gstatic.com/firebasejs/12.15.0/firebase-database.js';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAVYgT6XlOJU9RCj-istp6QAlIKjBmLDs8",
+  authDomain: "vota-malta.firebaseapp.com",
+  databaseURL: "https://vota-malta-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "vota-malta",
+  storageBucket: "vota-malta.firebasestorage.app",
+  messagingSenderId: "518225838850",
+  appId: "1:518225838850:web:e794ad3deeef70b014381b"
+};
+
+let app, db;
+try { app = initializeApp(firebaseConfig); db = getDatabase(app); } catch(e) { console.warn("Firebase non configurato. Modifica firebaseConfig."); }
+
+const EVENTS = [
+  {
+    id:"mamacita", name:"Mamacita", date:"2026-07-20", day:"Lunedì 20 Luglio",
+    description:"Lo show Reggaeton n.1 a Malta! Ballerine professioniste, show visivo esplosivo, DJ internazionali nella Main Room di Gianpula, il più grande club all'aperto dell'isola. Un'esperienza caliente sotto le stelle.",
+    location:"Gianpula Main Room, Rabat", coords:"35.8819,14.3944",
+    price:"€25", drinks:"5€–10€, cocktail da 8€, bottiglie da 100€",
+    dress:"Sexy & Trendy", music:"Reggaeton, Hip-Hop, R&B, Latino",
+    time:"23:00–04:00", url:"https://maltafiesta.com/it/eventi/gianpula-malta/mamacita-gianpula/"
+  },
+  {
+    id:"dolcevita", name:"Dolce Vita", date:"2026-07-27", day:"Lunedì 27 Luglio",
+    description:"L'Italia sbarca a Malta! 100% musica italiana, dai classici alle hit del momento. Atmosfera mediterranea, chic e calorosa nel cuore di Paceville. Il lunedì italiano per eccellenza.",
+    location:"Toy Room, Paceville (St Julian's)", coords:"35.9217,14.49",
+    price:"€20", drinks:"Min. 20€ (4 drink token)", dress:"Sexy & Italian Touch",
+    music:"100% Italian Hits & Remixes", time:"23:00–04:00",
+    url:"https://maltafiesta.com/it/eventi/toy-room-malta/dolce-vita-toy-room/"
+  },
+  {
+    id:"neonpool", name:"Neon Pool Party", date:"2026-07-28", day:"Martedì 28 Luglio",
+    description:"Pool party a tema neon con musica commercial. Atmosfera estiva e piscina illuminata. Dettagli in aggiornamento.",
+    location:"Toy Room Beach Club, Paceville", coords:"35.9217,14.49",
+    price:"€20–25", drinks:"Min. 20€ (4 drink token)", dress:"Neon/Beachwear",
+    music:"Commercial & Summer Hits", time:"22:00–03:00",
+    url:"https://maltafiesta.com/it/eventi/toy-room-malta/"
+  },
+  {
+    id:"glow", name:"Glow Neon Party", date:"2026-07-29", day:"Mercoledì 29 Luglio",
+    description:"Il Toy Room si illumina di luce UV! Trucco neon, braccialetti fluorescenti, outfit bianchi sotto i riflettori. La serata più luminosa di Paceville con le migliori hit commerciali.",
+    location:"Toy Room, Paceville (St Julian's)", coords:"35.9217,14.49",
+    price:"€20", drinks:"Min. 20€ (4 drink token)", dress:"Neon Ready (Bianco o colori vivaci)",
+    music:"Commercial & International Hits", time:"23:00–04:00",
+    url:"https://maltafiesta.com/it/eventi/toy-room-malta/glow-toy-room/"
+  },
+  {
+    id:"badbunnies", name:"Bad Bunnies", date:"2026-07-29", day:"Mercoledì 29 Luglio",
+    description:"Reggaeton Takeover al Marrakech Club! Show al neon, ballerine, performer. Navetta A/R da Paceville inclusa nel biglietto. Lusso marocchino + energia pura = serata epica.",
+    location:"Gianpula Village (Marrakech), Rabat", coords:"35.8819,14.3944",
+    price:"€20 (trasporto incluso)", drinks:"5€–10€, cocktail da 8€, bottiglie da 100€",
+    dress:"Sexy & Trendy", music:"Reggaeton, Hip-Hop, R&B, Latino",
+    time:"22:00–04:00", url:"https://maltafiesta.com/it/eventi/gianpula-malta/bad-bunnies-gianpula/"
+  },
+  {
+    id:"cafedelmar", name:"Cafe Del Mar Pool Party", date:"2026-07-30", day:"Giovedì 30 Luglio",
+    description:"Il miglior pool party di Malta! Tramonto leggendario, fire show, 4000 persone davanti al mare. House music, piscina XXL, fuochi d'artificio. Esperienza stile Ibiza.",
+    location:"Cafe Del Mar, St Paul's Bay (Qawra)", coords:"35.9545,14.4206",
+    price:"€50", drinks:"Da 5€, cocktail da 5€, pitcher da 20€",
+    dress:"Summer Chic & Swimwear", music:"Deep House & Club Hits",
+    time:"20:00–01:00", url:"https://maltafiesta.com/it/eventi/cafe-del-mar-malta/pool-party-cafe-del-mar/"
+  },
+  {
+    id:"glam", name:"Glam Night", date:"2026-07-30", day:"Giovedì 30 Luglio",
+    description:"Eleganza Old Money al 22° piano della Portomaso Tower. Cocktail d'autore, vista 360° su St Julian's. Rapporto 50/50, dress code Elegant & Classy. L'élite della notte maltese.",
+    location:"Twenty Two, Portomaso Tower, St Julian's", coords:"35.9222,14.4933",
+    price:"€15", drinks:"Da 8€", dress:"Elegant & Classy (Old Money)",
+    music:"Commercial & International Hits", time:"23:00–04:00",
+    url:"https://maltafiesta.com/it/eventi/twenty-two-malta/glam-night-twenty-two/"
+  },
+  {
+    id:"galactica", name:"Galactica (Cocoricò)", date:"2026-07-31", day:"Venerdì 31 Luglio",
+    description:"Dalla leggendaria Cocoricò d'Italia, Galactica torna a Malta! Hard Techno sotto il cielo mediterraneo all'UNO. Line-up: WINSON, LUCA AGNELLI, V111 (LIVE), MALISTA. La mecca della techno.",
+    location:"UNO Malta, Crafts Village, Ta'Qali, Attard", coords:"35.895,14.4195",
+    price:"€15–25", drinks:"8€–10€, cocktail da 8€",
+    dress:"Club Wear / Dark Style", music:"Hard Techno, Peak Time",
+    time:"23:00–04:00", url:"https://unomalta.com/event/galactica-31jul/"
+  },
+  {
+    id:"whiteparty", name:"White Party Marrakech", date:"2026-07-31", day:"Venerdì 31 Luglio",
+    description:"Il venerdì più esclusivo di Malta. Dress code Total White nel giardino Jungle Chic del Marrakech. House music, palme, atmosfera VIP sotto le stelle.",
+    location:"Gianpula Village (Marrakech), Rabat", coords:"35.8819,14.3944",
+    price:"€20", drinks:"5€–10€, cocktail da 8€, bottiglie da 100€",
+    dress:"Total White", music:"Commercial & Summer Hits",
+    time:"23:00–04:00", url:"https://maltafiesta.com/it/eventi/gianpula-malta/white-party-friday-gianpula/"
+  },
+  {
+    id:"circus", name:"Circus Party", date:"2026-07-31", day:"Venerdì 31 Luglio",
+    description:"Il Toy Room diventa un tendone da circo! Acrobati, performer, mangiafuoco e Frank the Bear. Show immersivo, luci psichedeliche, follia totale. Il venerdì più crazy di Paceville.",
+    location:"Toy Room, Paceville (St Julian's)", coords:"35.9217,14.49",
+    price:"€20", drinks:"Min. 20€ (4 drink token)", dress:"Trendy & Creative",
+    music:"Commercial & International Hits", time:"23:00–04:00",
+    url:"https://maltafiesta.com/it/eventi/toy-room-malta/circus-party-toy-room/"
+  },
+  {
+    id:"shock", name:"Shock Malta", date:"2026-08-01", day:"Sabato 1 Agosto",
+    description:"Non una festa, un festival. 3 sale, 3 sound diversi all'UNO Malta. Dalla techno all'house al commercial. Non-stop energy from open to close. Il sabato che ridefinisce Malta.",
+    location:"UNO Malta, Crafts Village, Ta'Qali, Attard", coords:"35.895,14.4195",
+    price:"€20–30", drinks:"8€–10€, cocktail da 8€",
+    dress:"Club Wear", music:"Techno / House / Multi-genre",
+    time:"23:00–04:00", url:"https://unomalta.com/event/shock-malta-0108/"
+  },
+  {
+    id:"wildwest", name:"Wild West", date:"2026-08-01", day:"Sabato 1 Agosto",
+    description:"Nuovissimo concept! Saloon immersivo al Toy Room con cowboy show, ballerine e Frank the Bear in versione sceriffo. Il sabato più selvaggio di St Julian's.",
+    location:"Toy Room, Paceville (St Julian's)", coords:"35.9217,14.49",
+    price:"€25", drinks:"Min. 20€ (4 drink token)", dress:"Trendy & Cowboy(girl)",
+    music:"Commercial & International Hits", time:"23:00–04:00",
+    url:"https://maltafiesta.com/it/eventi/toy-room-malta/wild-west-saturdays-toy-room/"
+  },
+  {
+    id:"schiuma", name:"Schiuma Party", date:"2026-08-01", day:"Sabato 1 Agosto",
+    description:"Il Foam Party più pazzo di Malta! Due piscine, tonnellate di schiuma, cannoni ad alta pressione. Trasporto A/R incluso. Vibe Project X in costume da bagno.",
+    location:"Aria Complex, San Gwann", coords:"35.9056,14.4778",
+    price:"€25 (trasporto incluso)", drinks:"Da 5€",
+    dress:"Swimsuit / Costume da bagno", music:"Commercial, International & Reggaeton",
+    time:"22:00–04:00", url:"https://maltafiesta.com/it/eventi/aria-complex-malta/foam-party-aria-complex/"
+  },
+  {
+    id:"love", name:"Love Night", date:"2026-08-02", day:"Domenica 2 Agosto",
+    description:"Chiudi il weekend col botto! Scegli il braccialetto del tuo status: single, complicato o impegnato. Frank the Bear fa da Cupido. La serata più sociale di Malta.",
+    location:"Toy Room, Paceville (St Julian's)", coords:"35.9217,14.49",
+    price:"€20", drinks:"Min. 20€ (4 drink token)", dress:"Sexy & Trendy",
+    music:"Commercial & International Hits", time:"23:00–04:00",
+    url:"https://maltafiesta.com/it/eventi/toy-room-malta/love-night-sunday-toy-room/"
+  }
+];
+
+function getMapEmbed(coords, name) {
+  return `<iframe src="https://maps.google.com/maps?q=${coords}&z=15&output=embed&t=m" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="${name}"></iframe>`;
+}
+
+function renderEventCard(e, userVotes) {
+  const hasVoted = userVotes && userVotes.includes(e.id);
+  const vc = window.voteCounts && window.voteCounts[e.id] ? window.voteCounts[e.id] : 0;
+  return `
+    <div class="event-card">
+      <h3>${e.name}</h3>
+      <span class="date-badge">📅 ${e.day}</span>
+      <span class="genre">🎵 ${e.music}</span>
+      <p class="desc">${e.description}</p>
+      <div class="event-details">
+        <div class="detail"><strong>📍 Location</strong><span>${e.location}</span></div>
+        <div class="detail"><strong>💰 Ingresso</strong><span>${e.price}</span></div>
+        <div class="detail"><strong>🍹 Drink</strong><span>${e.drinks}</span></div>
+        <div class="detail"><strong>👕 Dress Code</strong><span>${e.dress}</span></div>
+        <div class="detail"><strong>⏰ Orario</strong><span>${e.time}</span></div>
+      </div>
+      <div class="map-container">${getMapEmbed(e.coords, e.name)}</div>
+      <div class="vote-section">
+        <button class="vote-btn${hasVoted?' voted':''}" ${!window.currentUser||hasVoted?'disabled':''}
+          onclick="${hasVoted?'':'vote(\''+e.id+'\')'}">
+          ${hasVoted?'✅ Votata':'🔥 Vota questa serata'}
+        </button>
+        <span class="vote-count">🗳️ ${vc} vot${vc!==1?'i':'o'}</span>
+        <a href="${e.url}" target="_blank" class="ticket-link">🎟️ Biglietti</a>
+      </div>
+    </div>`;
+}
+
+window.EVENTS = EVENTS;
+window.voteCounts = {};
+window.currentUser = null;
+window.userVotes = [];
+
+function loginCheck() {
+  const saved = localStorage.getItem('votaMalta_user');
+  if (saved) {
+    try {
+      const data = JSON.parse(saved);
+      window.currentUser = data.name;
+      window.userVotes = data.votes || [];
+      document.getElementById('userName').value = data.name;
+      document.getElementById('userMsg').textContent = `Ciao ${data.name}! 🎉`;
+    } catch(e) {}
+  }
+}
+
+function setUser() {
+  const name = document.getElementById('userName').value.trim();
+  if (!name) return;
+  window.currentUser = name;
+  const saved = localStorage.getItem('votaMalta_user');
+  let votes = [];
+  if (saved) {
+    try { votes = JSON.parse(saved).votes || []; } catch(e) {}
+  }
+  localStorage.setItem('votaMalta_user', JSON.stringify({name, votes}));
+  document.getElementById('userMsg').textContent = `Ciao ${name}! 🎉`;
+  renderAll();
+}
+
+async function vote(eventId) {
+  if (!window.currentUser) { alert('Inserisci prima il tuo nome!'); return; }
+  if (!db) { alert('Firebase non configurato. Vedi istruzioni.'); return; }
+  if (window.userVotes.includes(eventId)) { alert('Hai già votato questa serata!'); return; }
+
+  const voterRef = ref(db, `votes/${eventId}/voters/${encodeURIComponent(window.currentUser)}`);
+  const snap = await get(voterRef);
+  if (snap.exists()) { alert('Hai già votato questa serata!'); return; }
+
+  const updates = {};
+  updates[`votes/${eventId}/count`] = (window.voteCounts[eventId] || 0) + 1;
+  updates[`votes/${eventId}/voters/${encodeURIComponent(window.currentUser)}`] = true;
+  updates[`votes/${eventId}/name`] = EVENTS.find(e=>e.id===eventId)?.name || eventId;
+
+  await update(ref(db), updates);
+
+  window.userVotes.push(eventId);
+  const saved = localStorage.getItem('votaMalta_user');
+  if (saved) {
+    const data = JSON.parse(saved);
+    data.votes = window.userVotes;
+    localStorage.setItem('votaMalta_user', JSON.stringify(data));
+  }
+  renderAll();
+}
+
+window.setUser = setUser;
+window.vote = vote;
+
+function renderAll() {
+  renderEvents();
+  updateLeaderboard();
+}
+
+function updateLeaderboard() {
+  const sorted = EVENTS.map(e => ({id:e.id, name:e.name, count:window.voteCounts[e.id]||0}))
+    .sort((a,b) => b.count - a.count);
+  const ol = document.getElementById('ranking');
+  const medals = ['🥇','🥈','🥉'];
+  ol.innerHTML = sorted.map((e,i) => `
+    <li class="${i<3?'top'+(i+1):''}">
+      <span class="pos">${i<3?medals[i]:'#'+(i+1)}</span>
+      <span class="name">${e.name}</span>
+      <span class="votes">${e.count} vot${e.count!==1?'i':'o'}</span>
+    </li>`).join('');
+}
+
+function renderEvents() {
+  const dayFilter = document.getElementById('dayFilter')?.value || '';
+  const locFilter = document.getElementById('locationFilter')?.value || '';
+
+  let filtered = EVENTS;
+  if (dayFilter) filtered = filtered.filter(e => e.date === dayFilter);
+  if (locFilter) filtered = filtered.filter(e => e.location.toLowerCase().includes(locFilter.toLowerCase()));
+
+  const container = document.getElementById('eventsContainer');
+  if (filtered.length === 0) {
+    container.innerHTML = '<p style="text-align:center;padding:40px;opacity:.5;">Nessuna serata trovata con questi filtri</p>';
+    return;
+  }
+  container.innerHTML = filtered.map(e => renderEventCard(e, window.userVotes)).join('');
+
+  // Populate filters
+  const daySelect = document.getElementById('dayFilter');
+  if (daySelect && daySelect.options.length <= 1) {
+    const days = [...new Set(EVENTS.map(e => e.date))].sort();
+    days.forEach(d => {
+      const e = EVENTS.find(ev => ev.date === d);
+      daySelect.innerHTML += `<option value="${d}">${e.day}</option>`;
+    });
+  }
+  const locSelect = document.getElementById('locationFilter');
+  if (locSelect && locSelect.options.length <= 1) {
+    const locs = [...new Set(EVENTS.map(e => e.location.split(',')[0].trim()))].sort();
+    locs.forEach(l => { locSelect.innerHTML += `<option value="${l}">${l}</option>`; });
+  }
+}
+
+// Firebase listeners
+function setupFirebase() {
+  if (!db) return;
+  EVENTS.forEach(e => {
+    const countRef = ref(db, `votes/${e.id}/count`);
+    onValue(countRef, snap => {
+      window.voteCounts[e.id] = snap.val() || 0;
+      updateLeaderboard();
+      renderEvents();
+    });
+  });
+}
+
+loginCheck();
+setupFirebase();
+renderAll();
+
+// Re-render periodically for live updates
+setInterval(() => {
+  if (db) {
+    updateLeaderboard();
+    renderEvents();
+  }
+}, 5000);
+
+// Expose for inline onclick
+window.renderEvents = renderEvents;
+</script>
+
+</body>
+</html>
