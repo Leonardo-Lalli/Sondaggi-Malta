@@ -326,9 +326,9 @@ function renderEventCard(e, userVotes) {
       </div>
       <div class="map-container">${getMapEmbed(e.coords, e.name)}</div>
       <div class="vote-section">
-        <button class="vote-btn${hasVoted?' voted':''}" ${!window.currentUser||hasVoted?'disabled':''}
-          onclick="${hasVoted?'':'vote(\''+e.id+'\')'}">
-          ${hasVoted?'✅ Votata':'🔥 Vota questa serata'}
+        <button class="vote-btn${hasVoted?' voted':''}" ${!window.currentUser?'disabled':''}
+          onclick="toggleVote('${e.id}')">
+          ${hasVoted?'✅ Votata (clicca per rimuovere)':'🔥 Vota questa serata'}
         </button>
         <span class="vote-count">🗳️ ${vc} vot${vc!==1?'i':'o'}</span>
         <a href="${e.url}" target="_blank" class="ticket-link">🎟️ Biglietti</a>
@@ -368,23 +368,34 @@ function setUser() {
   renderAll();
 }
 
-async function vote(eventId) {
+async function toggleVote(eventId) {
   if (!window.currentUser) { alert('Inserisci prima il tuo nome!'); return; }
   if (!db) { alert('Firebase non configurato. Vedi istruzioni.'); return; }
-  if (window.userVotes.includes(eventId)) { alert('Hai già votato questa serata!'); return; }
 
-  const voterRef = ref(db, `votes/${eventId}/voters/${encodeURIComponent(window.currentUser)}`);
-  const snap = await get(voterRef);
-  if (snap.exists()) { alert('Hai già votato questa serata!'); return; }
+  const hasVoted = window.userVotes.includes(eventId);
+  const voterKey = encodeURIComponent(window.currentUser);
 
-  const updates = {};
-  updates[`votes/${eventId}/count`] = (window.voteCounts[eventId] || 0) + 1;
-  updates[`votes/${eventId}/voters/${encodeURIComponent(window.currentUser)}`] = true;
-  updates[`votes/${eventId}/name`] = EVENTS.find(e=>e.id===eventId)?.name || eventId;
+  if (!hasVoted) {
+    const voterRef = ref(db, `votes/${eventId}/voters/${voterKey}`);
+    const snap = await get(voterRef);
+    if (snap.exists()) { alert('Hai già votato questa serata!'); return; }
 
-  await update(ref(db), updates);
+    const updates = {};
+    updates[`votes/${eventId}/count`] = (window.voteCounts[eventId] || 0) + 1;
+    updates[`votes/${eventId}/voters/${voterKey}`] = true;
+    updates[`votes/${eventId}/name`] = EVENTS.find(e=>e.id===eventId)?.name || eventId;
+    await update(ref(db), updates);
 
-  window.userVotes.push(eventId);
+    window.userVotes.push(eventId);
+  } else {
+    const updates = {};
+    updates[`votes/${eventId}/count`] = Math.max(0, (window.voteCounts[eventId] || 1) - 1);
+    updates[`votes/${eventId}/voters/${voterKey}`] = null;
+    await update(ref(db), updates);
+
+    window.userVotes = window.userVotes.filter(id => id !== eventId);
+  }
+
   const saved = localStorage.getItem('votaMalta_user');
   if (saved) {
     const data = JSON.parse(saved);
@@ -395,7 +406,7 @@ async function vote(eventId) {
 }
 
 window.setUser = setUser;
-window.vote = vote;
+window.toggleVote = toggleVote;
 
 function renderAll() {
   renderEvents();
