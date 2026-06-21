@@ -136,6 +136,14 @@ body {
 .voters {
   font-size: .8em; color: #aaa; margin-top: 8px; font-style: italic;
 }
+.route-info {
+  font-size: .85em; color: #ccc; margin-top: 6px;
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+}
+.route-link {
+  color: #40e0d0; text-decoration: none; font-weight: 600; font-size: .9em;
+}
+.route-link:hover { text-decoration: underline; }
 
 footer { text-align: center; padding: 30px; opacity: .5; font-size: .85em; }
 
@@ -330,6 +338,26 @@ function getMapEmbed(coords, name) {
   return `<iframe src="https://maps.google.com/maps?q=${coords}&z=15&output=embed&t=m" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="${name}"></iframe>`;
 }
 
+const VENUE_DIST = {
+  "Toy Room": "~9 km, 15-20 min taxi",
+  "Gianpula": "~8 km, 15 min taxi",
+  "Cafe Del Mar": "~700 m, 10 min a piedi",
+  "Twenty Two": "~10 km, 20 min taxi",
+  "UNO Malta": "~7 km, 12 min taxi",
+  "Aria Complex": "~8 km, 15 min taxi"
+};
+
+function getRouteUrl(coords) {
+  return `https://www.google.com/maps/dir/St+Paul's+Bay,+Malta/${coords}`;
+}
+
+function getDist(location) {
+  for (const [k, v] of Object.entries(VENUE_DIST)) {
+    if (location.startsWith(k)) return v;
+  }
+  return "";
+}
+
 function renderEventCard(e, userVotes) {
   const hasVoted = userVotes && userVotes.includes(e.id);
   const vc = window.voteCounts && window.voteCounts[e.id] ? window.voteCounts[e.id] : 0;
@@ -349,6 +377,10 @@ function renderEventCard(e, userVotes) {
         <div class="detail"><strong>⏰ Orario</strong><span>${e.time}</span></div>
       </div>
       <div class="map-container">${getMapEmbed(e.coords, e.name)}</div>
+      <div class="route-info">
+        🚕 Da casa: <strong>${getDist(e.location)}</strong>
+        <a href="${getRouteUrl(e.coords)}" target="_blank" class="route-link">🗺️ Percorso</a>
+      </div>
       ${votersStr}
       <div class="vote-section">
         <button class="vote-btn${hasVoted?' voted':''}" ${!window.currentUser?'disabled':''}
