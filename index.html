@@ -26,10 +26,11 @@ body {
 .hero p { font-size: 1.2em; margin-top: 10px; opacity: .9; }
 
 .discount-banner {
-  background: linear-gradient(135deg, #ff0080, #ff8c00);
-  text-align: center; padding: 12px; font-size: .95em; font-weight: 600;
-  animation: pulse 2s infinite;
+  background: rgba(255,255,255,.08); border: 1px solid #ff8c00; border-radius: 12px;
+  text-align: center; padding: 10px; margin-bottom: 20px; font-size: .85em;
+  color: #ff8c00;
 }
+.discount-banner strong { color: #fff; letter-spacing: 1px; }
 
 .container { max-width: 900px; margin: 0 auto; padding: 20px; }
 
@@ -156,7 +157,7 @@ footer { text-align: center; padding: 30px; opacity: .5; font-size: .85em; }
 </div>
 
 <div class="discount-banner">
-  🔥 CODICE SCONTO: <strong>NV50RI7A</strong> — usalo su maltafiesta.com per risparmiare sui biglietti! 🔥
+  🎟️ Codice sconto biglietti: <strong>NV50RI7A</strong>
 </div>
 
 <div class="container">
@@ -217,7 +218,7 @@ const EVENTS = [
     location:"Toy Room, Paceville (St Julian's)", coords:"35.9217,14.49",
     price:"€20", drinks:"Min. 20€ (4 drink token)", dress:"Sexy & Italian Touch",
     music:"100% Italian Hits & Remixes", time:"23:00–04:00",
-    url:"https://maltafiesta.com/it/eventi/toy-room-malta/dolce-vita-toy-room/"
+    url:"https://www.instagram.com/toyroommalta/"
   },
   {
     id:"mamacita", name:"Mamacita", date:"2026-07-28", day:"Martedì 28 Luglio",
@@ -225,7 +226,7 @@ const EVENTS = [
     location:"Gianpula Main Room, Rabat", coords:"35.8819,14.3944",
     price:"€25", drinks:"5€–10€, cocktail da 8€, bottiglie da 100€",
     dress:"Sexy & Trendy", music:"Reggaeton, Hip-Hop, R&B, Latino",
-    time:"23:00–04:00", url:"https://maltafiesta.com/it/eventi/gianpula-malta/mamacita-gianpula/"
+    time:"23:00–04:00",     url:"https://www.gianpulavillage.com/events/"
   },
   {
     id:"neonpool", name:"Neon Pool Party", date:"2026-07-28", day:"Martedì 28 Luglio",
@@ -233,7 +234,7 @@ const EVENTS = [
     location:"Toy Room Beach Club, Paceville", coords:"35.9217,14.49",
     price:"€20", drinks:"Min. 20€ (4 drink token)", dress:"Neon/Beachwear",
     music:"Commercial & Dance Hits", time:"22:00–03:00",
-    url:"https://maltafiesta.com/it/eventi/toy-room-malta/"
+    url:"https://www.instagram.com/toyroommalta/"
   },
   {
     id:"glow", name:"Glow Neon Party", date:"2026-07-29", day:"Mercoledì 29 Luglio",
@@ -241,7 +242,7 @@ const EVENTS = [
     location:"Toy Room, Paceville (St Julian's)", coords:"35.9217,14.49",
     price:"€20", drinks:"Min. 20€ (4 drink token)", dress:"Neon Ready (Bianco o colori vivaci)",
     music:"Commercial & International Hits", time:"23:00–04:00",
-    url:"https://maltafiesta.com/it/eventi/toy-room-malta/glow-toy-room/"
+    url:"https://www.instagram.com/toyroommalta/"
   },
   {
     id:"badbunnies", name:"Bad Bunnies", date:"2026-07-29", day:"Mercoledì 29 Luglio",
@@ -249,7 +250,7 @@ const EVENTS = [
     location:"Gianpula Village (Marrakech), Rabat", coords:"35.8819,14.3944",
     price:"€20 (trasporto incluso)", drinks:"5€–10€, cocktail da 8€, bottiglie da 100€",
     dress:"Sexy & Trendy", music:"Reggaeton, Hip-Hop, R&B, Latino",
-    time:"22:00–04:00", url:"https://maltafiesta.com/it/eventi/gianpula-malta/bad-bunnies-gianpula/"
+    time:"22:00–04:00",     url:"https://www.gianpulavillage.com/events/"
   },
   {
     id:"cafedelmar", name:"Cafe Del Mar Pool Party", date:"2026-07-30", day:"Giovedì 30 Luglio",
@@ -257,7 +258,7 @@ const EVENTS = [
     location:"Cafe Del Mar, St Paul's Bay (Qawra)", coords:"35.9545,14.4206",
     price:"€50", drinks:"Da 5€, cocktail da 5€, pitcher da 20€",
     dress:"Summer Chic & Swimwear", music:"Deep House & Club Hits",
-    time:"20:00–01:00", url:"https://maltafiesta.com/it/eventi/cafe-del-mar-malta/pool-party-cafe-del-mar/"
+    time:"20:00–01:00",     url:"https://www.cafedelmar.com.mt/"
   },
   {
     id:"glam", name:"Glam Night", date:"2026-07-30", day:"Giovedì 30 Luglio",
@@ -265,7 +266,7 @@ const EVENTS = [
     location:"Twenty Two, Portomaso Tower, St Julian's", coords:"35.9222,14.4933",
     price:"€15", drinks:"Da 8€", dress:"Elegant & Classy (Old Money)",
     music:"Commercial & International Hits", time:"23:00–04:00",
-    url:"https://maltafiesta.com/it/eventi/twenty-two-malta/glam-night-twenty-two/"
+    url:"https://www.instagram.com/twentytwomalta/"
   },
   {
     id:"galactica", name:"Galactica (Cocoricò)", date:"2026-07-31", day:"Venerdì 31 Luglio",
@@ -281,7 +282,7 @@ const EVENTS = [
     location:"Gianpula Village (Marrakech), Rabat", coords:"35.8819,14.3944",
     price:"€20", drinks:"5€–10€, cocktail da 8€, bottiglie da 100€",
     dress:"Total White", music:"Commercial & Summer Hits",
-    time:"23:00–04:00", url:"https://maltafiesta.com/it/eventi/gianpula-malta/white-party-friday-gianpula/"
+    time:"23:00–04:00",     url:"https://www.gianpulavillage.com/events/"
   },
   {
     id:"circus", name:"Circus Party", date:"2026-07-31", day:"Venerdì 31 Luglio",
@@ -289,7 +290,7 @@ const EVENTS = [
     location:"Toy Room, Paceville (St Julian's)", coords:"35.9217,14.49",
     price:"€20", drinks:"Min. 20€ (4 drink token)", dress:"Trendy & Creative",
     music:"Commercial & International Hits", time:"23:00–04:00",
-    url:"https://maltafiesta.com/it/eventi/toy-room-malta/circus-party-toy-room/"
+    url:"https://www.instagram.com/toyroommalta/"
   },
   {
     id:"shock", name:"Shock Malta", date:"2026-08-01", day:"Sabato 1 Agosto",
@@ -305,7 +306,7 @@ const EVENTS = [
     location:"Toy Room, Paceville (St Julian's)", coords:"35.9217,14.49",
     price:"€25", drinks:"Min. 20€ (4 drink token)", dress:"Trendy & Cowboy(girl)",
     music:"Commercial & International Hits", time:"23:00–04:00",
-    url:"https://maltafiesta.com/it/eventi/toy-room-malta/wild-west-saturdays-toy-room/"
+    url:"https://www.instagram.com/toyroommalta/"
   },
   {
     id:"schiuma", name:"Schiuma Party", date:"2026-08-01", day:"Sabato 1 Agosto",
@@ -313,7 +314,7 @@ const EVENTS = [
     location:"Aria Complex, San Gwann", coords:"35.9056,14.4778",
     price:"€25 (trasporto incluso)", drinks:"Da 5€",
     dress:"Swimsuit / Costume da bagno", music:"Commercial, International & Reggaeton",
-    time:"22:00–04:00", url:"https://maltafiesta.com/it/eventi/aria-complex-malta/foam-party-aria-complex/"
+    time:"22:00–04:00",     url:"https://www.instagram.com/ariacomplexmalta/"
   },
   {
     id:"love", name:"Love Night", date:"2026-08-02", day:"Domenica 2 Agosto",
@@ -321,7 +322,7 @@ const EVENTS = [
     location:"Toy Room, Paceville (St Julian's)", coords:"35.9217,14.49",
     price:"€20", drinks:"Min. 20€ (4 drink token)", dress:"Sexy & Trendy",
     music:"Commercial & International Hits", time:"23:00–04:00",
-    url:"https://maltafiesta.com/it/eventi/toy-room-malta/love-night-sunday-toy-room/"
+    url:"https://www.instagram.com/toyroommalta/"
   }
 ];
 
