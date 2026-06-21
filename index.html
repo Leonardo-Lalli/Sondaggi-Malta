@@ -126,6 +126,9 @@ body {
   background: #40e0d0; color: #000; font-weight: 700; text-decoration: none;
   font-size: .9em; margin-top: 8px;
 }
+.voters {
+  font-size: .8em; color: #aaa; margin-top: 8px; font-style: italic;
+}
 
 footer { text-align: center; padding: 30px; opacity: .5; font-size: .85em; }
 
@@ -148,7 +151,15 @@ footer { text-align: center; padding: 30px; opacity: .5; font-size: .85em; }
 
 <div class="container">
   <div class="user-bar" id="userBar">
-    <input type="text" id="userName" placeholder="Il tuo nome..." maxlength="20">
+    <select id="userName" style="padding:12px 20px;border-radius:30px;border:2px solid #ff8c00;background:rgba(0,0,0,.4);color:#fff;font-size:1em;outline:none;min-width:160px;">
+      <option value="">Chi sei?</option>
+      <option value="Leo">Leo</option>
+      <option value="Noemi">Noemi</option>
+      <option value="Giulia">Giulia</option>
+      <option value="Daniele">Daniele</option>
+      <option value="Loris">Loris</option>
+      <option value="Rumena">Rumena</option>
+    </select>
     <button onclick="setUser()">Entra & Vota</button>
     <span id="userMsg" style="color:#40e0d0;font-weight:600;"></span>
   </div>
@@ -311,6 +322,8 @@ function getMapEmbed(coords, name) {
 function renderEventCard(e, userVotes) {
   const hasVoted = userVotes && userVotes.includes(e.id);
   const vc = window.voteCounts && window.voteCounts[e.id] ? window.voteCounts[e.id] : 0;
+  const vl = window.voters && window.voters[e.id] ? window.voters[e.id] : [];
+  const votersStr = vl.length > 0 ? `<div class="voters">👥 ${vl.join(', ')}</div>` : '';
   return `
     <div class="event-card">
       <h3>${e.name}</h3>
@@ -325,6 +338,7 @@ function renderEventCard(e, userVotes) {
         <div class="detail"><strong>⏰ Orario</strong><span>${e.time}</span></div>
       </div>
       <div class="map-container">${getMapEmbed(e.coords, e.name)}</div>
+      ${votersStr}
       <div class="vote-section">
         <button class="vote-btn${hasVoted?' voted':''}" ${!window.currentUser?'disabled':''}
           onclick="toggleVote('${e.id}')">
@@ -338,6 +352,7 @@ function renderEventCard(e, userVotes) {
 
 window.EVENTS = EVENTS;
 window.voteCounts = {};
+window.voters = {};
 window.currentUser = null;
 window.userVotes = [];
 
@@ -387,6 +402,8 @@ async function toggleVote(eventId) {
     await update(ref(db), updates);
 
     window.userVotes.push(eventId);
+    if (!window.voters[eventId]) window.voters[eventId] = [];
+    if (!window.voters[eventId].includes(window.currentUser)) window.voters[eventId].push(window.currentUser);
   } else {
     const updates = {};
     updates[`votes/${eventId}/count`] = Math.max(0, (window.voteCounts[eventId] || 1) - 1);
@@ -394,6 +411,9 @@ async function toggleVote(eventId) {
     await update(ref(db), updates);
 
     window.userVotes = window.userVotes.filter(id => id !== eventId);
+    if (window.voters[eventId]) {
+      window.voters[eventId] = window.voters[eventId].filter(n => n !== window.currentUser);
+    }
   }
 
   const saved = localStorage.getItem('votaMalta_user');
@@ -475,6 +495,13 @@ function setupFirebase() {
     const countRef = ref(db, `votes/${e.id}/count`);
     onValue(countRef, snap => {
       window.voteCounts[e.id] = snap.val() || 0;
+      updateLeaderboard();
+      renderEvents();
+    });
+    const votersRef = ref(db, `votes/${e.id}/voters`);
+    onValue(votersRef, snap => {
+      const data = snap.val();
+      window.voters[e.id] = data ? Object.keys(data) : [];
       updateLeaderboard();
       renderEvents();
     });
