@@ -191,14 +191,6 @@ try { app = initializeApp(firebaseConfig); db = getDatabase(app); } catch(e) { c
 
 const EVENTS = [
   {
-    id:"mamacita", name:"Mamacita", date:"2026-07-20", day:"Lunedì 20 Luglio",
-    description:"Lo show Reggaeton n.1 a Malta! Ballerine professioniste, show visivo esplosivo, DJ internazionali nella Main Room di Gianpula, il più grande club all'aperto dell'isola. Un'esperienza caliente sotto le stelle.",
-    location:"Gianpula Main Room, Rabat", coords:"35.8819,14.3944",
-    price:"€25", drinks:"5€–10€, cocktail da 8€, bottiglie da 100€",
-    dress:"Sexy & Trendy", music:"Reggaeton, Hip-Hop, R&B, Latino",
-    time:"23:00–04:00", url:"https://maltafiesta.com/it/eventi/gianpula-malta/mamacita-gianpula/"
-  },
-  {
     id:"dolcevita", name:"Dolce Vita", date:"2026-07-27", day:"Lunedì 27 Luglio",
     description:"L'Italia sbarca a Malta! 100% musica italiana, dai classici alle hit del momento. Atmosfera mediterranea, chic e calorosa nel cuore di Paceville. Il lunedì italiano per eccellenza.",
     location:"Toy Room, Paceville (St Julian's)", coords:"35.9217,14.49",
@@ -403,7 +395,17 @@ function renderAll() {
 }
 
 function updateLeaderboard() {
-  const sorted = EVENTS.map(e => ({id:e.id, name:e.name, count:window.voteCounts[e.id]||0}))
+  const dayFilter = document.getElementById('dayFilter')?.value || '';
+  const h2 = document.querySelector('#leaderboard h2');
+  let list = EVENTS;
+  if (dayFilter) {
+    list = list.filter(e => e.date === dayFilter);
+    const dayName = list.length > 0 ? list[0].day : '';
+    h2.textContent = `🏆 Migliore serata — ${dayName}`;
+  } else {
+    h2.textContent = '🏆 Classifica Serate';
+  }
+  const sorted = list.map(e => ({id:e.id, name:e.name, count:window.voteCounts[e.id]||0}))
     .sort((a,b) => b.count - a.count);
   const ol = document.getElementById('ranking');
   const medals = ['🥇','🥈','🥉'];
@@ -444,6 +446,7 @@ function renderEvents() {
     const locs = [...new Set(EVENTS.map(e => e.location.split(',')[0].trim()))].sort();
     locs.forEach(l => { locSelect.innerHTML += `<option value="${l}">${l}</option>`; });
   }
+  updateLeaderboard();
 }
 
 // Firebase listeners
